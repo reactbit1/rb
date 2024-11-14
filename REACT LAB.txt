@@ -1,0 +1,719 @@
+REACT LAB
+-------------------------------------------------------------
+Contact Address
+Lab 1:---------------------------------------------------------
+import React from 'react';
+const AddressDetails=()=>{
+return(
+<div>
+<ul>
+<li>
+<h3>Main Office</h3>
+<p>12/32, Main Street, Kodambakkam, Chennai</p>
+</li>
+<li>
+<h3>Satellite Office</h3>
+<p>36/18, 2nd Street, Anna Nagar, Chennai</p>
+</li>
+</ul>
+</div>
+);
+};
+export default AddressDetails;
+import React from 'react';
+const ContactDetails=()=>{
+return(
+<div>
+<ul>
+<li>Phone: +91 90987654321</li>
+<li>Email: contact@company.com</li>
+</ul>
+</div>
+);
+};
+export default ContactDetails;
+import React from 'react';
+import ContactDetails from './components/ContactDetails';
+import AddressDetails from './components/AddressDetails';
+const App=()=>{
+return(
+<div>
+<h1>Contact Us</h1>
+<p>Kindly reach out us, if you have any concerns or feedback!</p>
+<ContactDetails/>
+<AddressDetails/>
+</div>
+);
+};
+export default App;
+----------------------------------------------------------------------
+ToDoList
+Lab 2:--------------------------------------------------------------
+import React, { useState } from 'react';
+import ToDoListManager from './components/ToDoListManager';
+function App() {
+return (
+<div>
+<ToDoListManager />
+</div>
+);
+}
+export default App;
+import React, { useState } from 'react';
+import TaskItem from './TaskItem';
+function ToDoListManager() {
+const [tasks, setTasks] = useState([]);
+const [taskName, setTaskName] = useState('');
+const [taskDescription, setTaskDescription] = useState('');
+const addTask = () => {
+if (taskName && taskDescription) {
+const newTask = { id: tasks.length + 1, name: taskName, description: taskDescription, completed:
+false };
+setTasks([...tasks, newTask]);
+setTaskName('');
+setTaskDescription('');
+}
+};
+const completeTask = (id) => {
+setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+};
+const modifyTask = (id, name, description) => {
+setTasks(tasks.map(task =>
+task.id === id ? { ...task, name: task.completed ? task.name : name, description: task.completed ?
+task.description : description } : task
+));
+};
+return (
+<div>
+<h2>To-Do List Manager</h2>
+<input
+placeholder="Task Name"
+value={taskName}
+onChange={(e) => setTaskName(e.target.value)}
+/>
+<input
+placeholder="Task Description"
+value={taskDescription}
+onChange={(e) => setTaskDescription(e.target.value)}
+/>
+<button onClick={addTask}>Add Task</button>
+<ul>
+{tasks.map(task => (
+<TaskItem
+key={task.id}
+task={task}
+onComplete={() => completeTask(task.id)}
+onModify={modifyTask}
+/>
+))}
+</ul>
+</div>
+);
+}
+export default ToDoListManager;
+import React, { useEffect } from 'react';
+function TaskItem({ task, onComplete, onModify }) {
+useEffect(() => {
+console.log(Task ${task.id} mounted);
+return () => {
+console.log(Task ${task.id} will unmount);
+};
+}, [task.id]);
+const handleNameChange = (e) => {
+onModify(task.id, e.target.value, task.description);
+};
+const handleDescriptionChange = (e) => {
+onModify(task.id, task.name, e.target.value);
+};
+return (
+<li>
+<input
+type="text"
+value={task.name}
+onChange={handleNameChange}
+disabled={task.completed}
+/>
+<input
+type="text"
+value={task.description}
+onChange={handleDescriptionChange}
+disabled={task.completed}
+/>
+<input
+type="checkbox"
+checked={task.completed}
+onChange={onComplete}
+/>
+</li>
+);
+}
+export default TaskItem;
+-------------------------------------------------------------------------------------------------------------------------------
+RegistrationForm
+Lab 3:------------------------------------------------------------------------------------------------------------------------------------------------------
+import React, { useState } from 'react';
+function RegistrationForm() {
+const [formData, setFormData] = useState({
+fullName: '',
+username: '',
+email: '',
+phone: '',
+password: '',
+});
+const [errors, setErrors] = useState({});
+const [isValid, setIsValid] = useState(false);
+const validateForm = () => {
+const newErrors = {};
+setIsValid(false);
+// Validate Full Name (<= 50 characters)
+if (formData.fullName.length > 50) {
+newErrors.fullName = 'Full Name must be less than or equal to 50 characters';
+}
+// Validate Username (alphanumeric and <= 10 characters)
+if (!/^[a-zA-Z0-9]{1,10}$/.test(formData.username)) {
+newErrors.username = 'Username must be alphanumeric and <= 10 characters';
+}
+// Validate Email (simple email regex)
+if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+newErrors.email = 'Invalid email format';
+}
+// Validate Phone (exactly 10 digits)
+if (!/^\d{10}$/.test(formData.phone)) {
+newErrors.phone = 'Phone number must contain exactly 10 digits';
+}
+// Validate Password (1 lowercase, 1 uppercase, 1 number, 1 special character, at least 8 characters)
+if (!/^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@#%&])[A-Za-z\d@#%&]{8,}$/.test(formData.password)) {
+newErrors.password = 'Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1
+special character (@ # % &)';
+}
+setErrors(newErrors);
+if (Object.keys(newErrors).length === 0) {
+setIsValid(true);
+}
+};
+const handleChange = (e) => {
+const { name, value } = e.target;
+setFormData((prev) => ({ ...prev, [name]: value }));
+setErrors((prev) => ({ ...prev, [name]: null }));
+setIsValid(false);
+};
+const handleSubmit = (e) => {
+e.preventDefault();
+validateForm();
+};
+
+return (
+<div>
+<form onSubmit={handleSubmit}>
+<label>
+Full Name:
+<input
+type="text"
+name="fullName"
+value={formData.fullName}
+onChange={handleChange}
+aria-label="Full Name"
+/>
+</label>
+{errors.fullName && <p>{errors.fullName}</p>}
+
+<label>
+Username:
+<input
+type="text"
+name="username"
+value={formData.username}
+onChange={handleChange}
+aria-label="Username"
+/>
+</label>
+{errors.username && <p>{errors.username}</p>}
+
+<label>
+Email:
+<input
+type="email"
+name="email"
+value={formData.email}
+onChange={handleChange}
+aria-label="Email"
+/>
+</label>
+{errors.email && <p>{errors.email}</p>}
+
+<label>
+Phone:
+<input
+type="text"
+name="phone"
+value={formData.phone}
+onChange={handleChange}
+aria-label="Phone"
+/>
+</label>
+{errors.phone && <p>{errors.phone}</p>}
+
+<label>
+Password:
+<input
+type="password"
+name="password"
+value={formData.password}
+onChange={handleChange}
+aria-label="Password"
+/>
+</label>
+{errors.password && <p>{errors.password}</p>}
+<button type="submit">Register</button>
+</form>
+{isValid && <p>Valid</p>}
+</div>
+);
+}
+export default RegistrationForm;
+------------------------------------------------------------------------------------------------------------------------------------
+StopWatch
+Lab 4:--------------------------------------------------------------------------------------------------------------------------------------------------
+import React, { useState, useRef } from 'react';
+const Stopwatch = () => {
+const [time, setTime] = useState(0);
+const [isRunning, setIsRunning] = useState(false);
+const intervalRef = useRef(null);
+const formatTime = (time) => {
+const milliseconds = Math.floor((time % 1000) / 10).toString().padStart(2, '0');
+const seconds = Math.floor((time / 1000) % 60).toString().padStart(2, '0');
+const minutes = Math.floor(time / 60000).toString().padStart(2, '0');
+return ${minutes}:${seconds}.${milliseconds};
+};
+const startStopwatch = () => {
+if (!isRunning) {
+setIsRunning(true);
+intervalRef.current = setInterval(() => {
+setTime(prevTime => prevTime + 10);
+}, 10);
+}
+};
+const pauseStopwatch = () => {
+if (isRunning) {
+setIsRunning(false);
+clearInterval(intervalRef.current);
+}
+};
+const resetStopwatch = () => {
+clearInterval(intervalRef.current);
+setIsRunning(false);
+setTime(0);
+};
+return (
+<div>
+<h2>Stopwatch</h2>
+<div>{formatTime(time)}</div>
+<button onClick={startStopwatch}>Start</button>
+<button onClick={pauseStopwatch}>Pause</button>
+<button onClick={resetStopwatch}>Reset</button>
+</div>
+);
+};
+export default Stopwatch;
+-----------------------------------------------------------------------------------------------------------------------------
+ShoppingCart
+Lab 5:-------------------------------------------------------------------------------------------------------------------------------------------
+import { useState } from "react";
+import React from "react";
+const ShoppingCart=()=>{
+const ProductList = [
+{id: 1, name: "Product 1", price: 10},
+{id: 2, name: "Product 2", price: 20},
+{id: 3, name: "Product 3", price: 30},
+{id: 4, name: "Product 4", price: 40},
+{id: 5, name: "Product 5", price: 50},
+{id: 6, name: "Product 6", price: 60},
+{id: 7, name: "Product 7", price: 70},
+{id: 8, name: "Product 8", price: 80},
+{id: 9, name: "Product 9", price: 90},
+{id: 10, name: "Product 10", price: 100},
+];
+const [cart , setCart] = useState([]);
+const [message , setMessage] = useState('');
+const addToCart=(product)=>{
+if(cart.some(item => item.id === product.id))
+{
+}
+setMessage('Product is already included in the cart');
+else if(cart.length>=3)
+{
+}
+setMessage('The cart is full')
+else{
+setCart([...cart,product]);
+setMessage('');
+}
+};
+
+return(
+<div>
+<h1>Products</h1>
+<h2 id="message">{message}</h2>
+
+<div id="ProductLists">
+{ProductList.map((product)=>(
+<div key={product.id} className="product card">
+<h3>{product.name}</h3>
+<p>Price: ${product.price}</p>
+<button
+onClick={()=>addToCart(product)}
+disabled={cart.includes(product)}>
+{cart.includes(product) ? 'Added' : 'Add to Cart'}
+</button>
+
+</div>
+))}
+</div>
+<div id="cart" className="cartItems">
+<h2>Selected Items</h2>
+
+{cart.map((item,index)=>(
+<p key={index}>{item.name} - ${item.price}</p>
+))}
+</div>
+</div>
+)
+}
+
+export default ShoppingCart;
+
+------------------------------------------------------------------------------------------------------------------
+In Progress, Completed, and Pending 
+Lab 6:-----------------------------------------------------------------------------------------------------------
+import React, { useState } from 'react';
+const App = () => {
+const [activeTab, setActiveTab] = useState('Completed');
+const tasks = {
+completed: ['Task 1', 'Task 4'],
+inProgress: [
+{ name: 'Task 2', overdue: true },
+{ name: 'Task 5', overdue: false }
+],
+pending: ['Task 3', 'Task 6']
+};
+const renderTasks = () => {
+if (activeTab === 'Completed') {
+return (
+<>
+<h2>Completed Tasks</h2>
+{tasks.completed.map(task => <p key={task}>{task}</p>)}
+</>
+);
+} else if (activeTab === 'In Progress') {
+return (
+<>
+<h2>In Progress Tasks</h2>
+{tasks.inProgress.map(task => (
+<p key={task.name}>
+{task.name} {task.overdue && <span>(Overdue)</span>}
+</p>
+))}
+</>
+);
+} else if (activeTab === 'Pending') {
+return (
+<>
+<h2>Pending Tasks</h2>
+{tasks.pending.map(task => <p key={task}>{task}</p>)}
+</>
+);
+}
+};
+return (
+<div>
+<h1>Task Manager</h1>
+<button onClick={() => setActiveTab('In Progress')}>In Progress</button>
+<button onClick={() => setActiveTab('Completed')}>Completed</button>
+<button onClick={() => setActiveTab('Pending')}>Pending</button>
+{renderTasks()}
+</div>
+);
+};
+export default App;
+
+------------------------------------------------------------------------------------------
+UserTable
+Lab 7:------------------------------------------------------------------------------------------------
+// src/components/UserTable.jsx
+import React from 'react';
+const UserTable = ({ users }) => {
+// Separate active and inactive users
+const activeUsers = users.filter(user => user.status === 'active');
+const inactiveUsers = users.filter(user => user.status === 'inactive');
+return (
+<div>
+<h2>Active Users</h2>
+<table border="1">
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+</tr>
+</thead>
+<tbody>
+{activeUsers.map((user, index) => (
+<tr key={index}>
+<td>{user.name}</td>
+<td>{user.email}</td>
+<td>{user.phone}</td>
+</tr>
+))}
+</tbody>
+</table>
+
+<h2>Inactive Users</h2>
+<table border="1">
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+</tr>
+</thead>
+<tbody>
+{inactiveUsers.map((user, index) => (
+<tr key={index}>
+<td>{user.name}</td>
+<td>{user.email}</td>
+<td>{user.phone}</td>
+</tr>
+))}
+</tbody>
+</table>
+</div>
+);
+};
+export default UserTable;
+// src/App.js
+import React from 'react';
+import UserTable from './components/UserTable';
+const App = () => {
+const users = [
+{ name: "Alice Johnson", email: "alice@example.com", phone: "123-456-7890", status: "active" },
+{ name: "Bob Smith", email: "bob@example.com", phone: "234-567-8901", status: "inactive" },
+{ name: "Charlie Brown", email: "charlie@example.com", phone: "345-678-9012", status: "active"
+},
+{ name: "Dana White", email: "dana@example.com", phone: "456-789-0123", status: "inactive" }
+];
+return (
+<div>
+<h1>User Management</h1>
+<UserTable users={users} />
+</div>
+);
+};
+export default App;
+------------------------------------------------------------------------------------------------------------------
+Timer ElapsedTimer
+Lab 8:--------------------------------------------------------------------------------------------------------------------------------------------
+import React, { useState, useEffect } from 'react';
+const Timer = () => {
+const [elapsedTime, setElapsedTime] = useState(0);
+useEffect(() => {
+const intervalId = setInterval(() => {
+setElapsedTime(prevTime => prevTime + 1);
+}, 1000);
+// Cleanup timer on component unmount
+return () => clearInterval(intervalId);
+}, []);
+return <div>Elapsed time: {elapsedTime} seconds</div>;
+};
+export default Timer;
+
+-------------------------------------------------------------------------------------------------
+FeedbackForm
+Lab 9:--------------------------------------------------------------------------------------------------------------------------------
+import React, { useState, useEffect } from 'react';
+const FeedbackForm = () => {
+const [formData, setFormData] = useState({
+name: '',
+email: '',
+phone: '',
+userId: '',
+message: ''
+});
+const [errors, setErrors] = useState({});
+const [successMessage, setSuccessMessage] = useState('');
+useEffect(() => {
+// Clear error messages whenever the form data changes
+setErrors({});
+}, [formData]);
+const validate = () => {
+const newErrors = {};
+if (!formData.name) newErrors.name = 'Name is required';
+if (!formData.email) newErrors.email = 'Email is required';
+else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format';
+if (!formData.phone) newErrors.phone = 'Phone is required';
+if (!formData.userId) newErrors.userId = 'User ID is required';
+if (!formData.message) newErrors.message = 'Message is required';
+setErrors(newErrors);
+return Object.keys(newErrors).length === 0;
+};
+const handleChange = (e) => {
+const { name, value } = e.target;
+setFormData(prev => ({
+...prev,
+[name]: value
+}));
+};
+
+const handleSubmit = (e) => {
+e.preventDefault();
+if (validate()) {
+setSuccessMessage('Feedback submitted successfully!');
+setErrors({});
+setFormData({
+name: '',
+email: '',
+phone: '',
+userId: '',
+message: ''
+});
+}
+};
+
+return (
+<form onSubmit={handleSubmit}>
+<h2>Feedback Form</h2>
+
+<div>
+<label htmlFor="name">Name:</label>
+<input
+type="text"
+id="name"
+name="name"
+value={formData.name}
+onChange={handleChange}
+/>
+{errors.name && <div>{errors.name}</div>}
+</div>
+
+<div>
+<label htmlFor="email">Email:</label>
+<input
+type="email"
+id="email"
+name="email"
+value={formData.email}
+onChange={handleChange}
+/>
+{errors.email && <div>{errors.email}</div>}
+</div>
+
+<div>
+<label htmlFor="phone">Phone:</label>
+<input
+type="text"
+id="phone"
+name="phone"
+value={formData.phone}
+onChange={handleChange}
+/>
+{errors.phone && <div>{errors.phone}</div>}
+</div>
+
+<div>
+<label htmlFor="userId">User ID:</label>
+<input
+type="text"
+id="userId"
+name="userId"
+value={formData.userId}
+onChange={handleChange}
+/>
+{errors.userId && <div>{errors.userId}</div>}
+</div>
+<div>
+<label htmlFor="message">Message:</label>
+<textarea
+id="message"
+name="message"
+value={formData.message}
+onChange={handleChange}
+/>
+{errors.message && <div>{errors.message}</div>}
+</div>
+<button type="submit">Submit</button>
+{successMessage && <div>{successMessage}</div>}
+</form>
+);
+};
+export default FeedbackForm;
+
+-----------------------------------------------------------------------------------------------------------------------------
+Sticky Notes
+Lab 10:---------------------------------------------------------------------------------------------------------------------------------------
+App.js
+import React, { useState } from 'react';
+function App() {
+const [notes, setNotes] = useState([]);
+const [note, setNote] = useState({ title: '', content: '' });
+const [isEditing, setIsEditing] = useState(false);
+const [editIndex, setEditIndex] = useState(null);
+const handleChange = (e) => {
+const { name, value } = e.target;
+setNote({ ...note, [name]: value });
+};
+const handleAddNote = () => {
+if (note.title && note.content) {
+if (isEditing) {
+const updatedNotes = notes.map((n, index) => (index === editIndex ? note : n));
+setNotes(updatedNotes);
+setIsEditing(false);
+setEditIndex(null);
+} else {
+setNotes([...notes, note]);
+}
+setNote({ title: '', content: '' });
+}
+};
+const handleEditNote = (index) => {
+setIsEditing(true);
+setEditIndex(index);
+setNote(notes[index]);
+};
+const handleDeleteNote = (index) => {
+const updatedNotes = notes.filter((_, i) => i !== index);
+setNotes(updatedNotes);
+};
+return (
+<div>
+<h1>Sticky Notes</h1>
+<div>
+<input
+type="text"
+placeholder="Title"
+name="title"
+value={note.title}
+onChange={handleChange}
+/>
+<textarea
+placeholder="Content"
+name="content"
+value={note.content}
+onChange={handleChange}
+/>
+<button onClick={handleAddNote}>
+{isEditing ? 'Update' : 'Save'} {/* Change to 'Update' when editing, 'Save' otherwise */}
+</button>
+</div>
+<div>
+{notes.map((note, index) => (
+<div key={index}>
+<h2>{note.title}</h2>
+<p>{note.content}</p>
+<button onClick={() => handleEditNote(index)}>Edit</button>
+<button onClick={() => handleDeleteNote(index)}>Delete</button>
+</div>
+))}
+</div>
+</div>
+);
+}
+export default App;
